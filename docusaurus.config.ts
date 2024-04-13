@@ -40,7 +40,7 @@ const config: Config = {
   themeConfig: {
     matomo: {
       matomoUrl: "https://track.areyouscared.dev/",
-      siteId: "1",
+      siteId: "2", // 1-prod, 2-dev
       phpLoader: "matomo.php",
       jsLoader: "matomo.js",
     },
