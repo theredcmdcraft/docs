@@ -2,6 +2,7 @@ import { themes as prismThemes } from "prism-react-renderer";
 import type { Config } from "@docusaurus/types";
 import type * as Preset from "@docusaurus/preset-classic";
 import tailwindPlugin from "./src/plugins/tailwind-config.cjs";
+import type * as Redocusaurus from 'redocusaurus';
 import remarkgfm from "remark-gfm";
 
 const config: Config = {
@@ -38,6 +39,17 @@ const config: Config = {
         },
       } satisfies Preset.Options,
     ],
+    [
+      'redocusaurus',
+      {
+        specs: [
+          {
+            spec: './src/components/Client-API.yaml',
+            route: '/api/client',
+          },
+        ],
+      },
+    ] satisfies Redocusaurus.PresetEntry,
   ],
   themeConfig: {
     navbar: {
@@ -60,6 +72,7 @@ const config: Config = {
           position: "left",
         },
         { to: "/faq", label: "FAQ", position: "left" },
+        { to: "/api/client", label: "Client API", position: "right"},
         {
           href: "https://github.com/pelican-dev/",
           position: "right",
