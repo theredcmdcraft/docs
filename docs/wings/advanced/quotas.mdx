@@ -1,0 +1,63 @@
+import Admonition from '@theme/Admonition';
+
+# Setting up disks for support for quotas
+
+<Admonition type="info">
+    It is always recommended to keep the server files on a separate partition so the root partition isn't filled and the host crashes.
+</Admonition>
+
+<Admonition type="warning">
+    These in progress and not supported at this time.
+</Admonition>
+
+<Admonition type="warning">
+    These are advanced configurations meant for hosts.
+</Admonition>
+
+## Using ZFS
+Most recommended over the others as it is the easiest to work with.
+
+### install zfs
+Go to the [ZFSOnLinux docs](https://openzfs.github.io/openzfs-docs/Getting%20Started/index.html) to install OpenZFS on your host.
+
+
+## Using XFS
+
+## Using EXT4
+
+### create ext4 partition with quotas enabled
+Create and mount the ext4 partition 
+```bash
+mkfs.ext4 -O quota -E quotatype=usrquota:grpquota:prjquota /dev/${DEV_ID}
+mount /dev/${DEV_ID} /var/lib/pelican/volumes/
+```
+
+Add newly created ext4 filesystem to fstab to have it mount after a reboot
+
+```bash
+echo -e "UUID=$(lsblk /dev/${DEV_ID} -no UUID)   /mnt/ext4/  ext4    defaults|prjquota   0   1" >> /etc/fstab
+```
+
+### advances manual intervention
+set quota limits by project id.
+```bash
+setquota -P ${server_uuid} ${soft_limit} ${hard_limit} 0 0 /dev/sdb
+```
+
+get quota stats
+```bash
+repquota  -P /dev/${DEV_ID} -O csv
+```
+
+example output
+|Project|BlockStatus|FileStatus|BlockUsed|BlockSoftLimit|BlockHardLimit|BlockGrace|FileUsed|FileSoftLimit|FileHardLimit|FileGrace|
+|-------|-------|-------|-------|-------|-------|-------|-------|-------|-------|-------|
+|235844d3-9258-4846-bb04-bcff209ccf9a|ok|ok|2097164|0|20971520||3|0|0||
+|b91d5528-d53f-4586-8d5c-682027f74a36|ok|ok|0|0|10485760||0|0|0||
+
+```bash
+quota -vP 235844d3-9258-4846-bb04-bcff209ccf9a
+```
+
+
+setquota -P b91d5528-d53f-4586-8d5c-682027f74a36 0 10485760 0 0 /mnt/ext4/
